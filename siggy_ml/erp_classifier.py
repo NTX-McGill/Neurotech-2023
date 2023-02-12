@@ -14,7 +14,7 @@ class classifier:
 		b,a = iirnotch(60, 30, self.sampling_rate)
 		data = filtfilt(b, a, data)
 
-		b, a = butter(4, [0.5 / nyquist, 20 / nyquist], 'bandpass', analog=False)
+		b, a = butter(4, [0.5 / nyquist, 40 / nyquist], 'bandpass', analog=False)
 		data = filtfilt(b, a, data)
 		return data
 
