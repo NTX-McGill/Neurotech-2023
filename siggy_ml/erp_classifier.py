@@ -10,6 +10,7 @@ class classifier:
 
 	def preprocess(self, data):
 		# apply some filters/interpolation/resampling/smoothing/transform
+
 		nyquist = self.sampling_rate / 2
 		b,a = iirnotch(60, 30, self.sampling_rate)
 		data = filtfilt(b, a, data)
@@ -43,9 +44,12 @@ class stupid_clf(classifier):
 
 		mu = np.mean(X, axis = 1)
 		avg_range = (np.array([0.3, 0.5]) + self.offset)*self.sampling_rate
+		# print(np.linspace(-0.2, 0.8, 256)[int(avg_range[0])])
+		# print(np.linspace(-0.2, 0.8, 256)[int(avg_range[1])])
+
 		n400_mean = np.mean(X[:, int(avg_range[0]): int(avg_range[1])], axis = 1)
 
-		return np.greater(n400_mean, mu).astype(int)
+		return np.greater(mu, n400_mean).astype(int)
 
 class avg_ANOVA(classifier):
 	def predict(self, X):
