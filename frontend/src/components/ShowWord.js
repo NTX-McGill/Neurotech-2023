@@ -34,8 +34,17 @@ function ShowWord({file, delay}){
 	});
 
     // Returns the word in a styled fashion
+	const wordStyle = {
+		color: "black",
+		backgroundColor: "white",
+		// padding: "10px",
+		fontFamily: "Arial",
+		fontSize: "150px",
+		textAlign: "center"
+	};
+
 	return (
-		<div style={{textAlign: "center"}}>
+		<div style={wordStyle}>
 			<h1>{currWord}</h1>
 		</div>
 	);
