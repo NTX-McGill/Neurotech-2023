@@ -84,8 +84,8 @@ class feature_RF(feature_SVC):
 	def __init__(self, features = ['0__fft_coefficient__attr_"real"__coeff_1', '0__fft_coefficient__attr_"angle"__coeff_1', '0__fft_coefficient__attr_"imag"__coeff_1', '0__quantile__q_0.6', '0__median', '0__quantile__q_0.7', '0__fft_coefficient__attr_"real"__coeff_0', '0__sum_values', '0__mean', '0__quantile__q_0.4']):
 		self.sampling_rate = sampling_rate
 		self.offset = offset
-	    self.model = RandomForestClassifier()
-        self.features = features
+		self.model = RandomForestClassifier()
+		self.features = features
 
 
 class ensemble_classifier(classifier):
