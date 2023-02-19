@@ -2,20 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt, iirnotch
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from tsfresh import extract_features
 
 class classifier:
 	def __init__(self, sampling_rate = 256, offset = 0.2):
 		self.sampling_rate = sampling_rate
 		self.offset = offset
 
-	def preprocess(self, data):
+	def preprocess(self, data, lower = 0.5, upper = 60):
 		# apply some filters/interpolation/resampling/smoothing/transform
 
 		nyquist = self.sampling_rate / 2
 		b,a = iirnotch(60, 30, self.sampling_rate)
 		data = filtfilt(b, a, data)
 
-		b, a = butter(4, [0.5 / nyquist, 20 / nyquist], 'bandpass', analog=False)
+		b, a = butter(4, [lower / nyquist, upper / nyquist], 'bandpass', analog=False)
 		data = filtfilt(b, a, data)
 		return data
 
@@ -51,23 +54,39 @@ class stupid_clf(classifier):
 
 		return np.greater(mu, n400_mean).astype(int)
 
-class avg_ANOVA(classifier):
-	def predict(self, X):
-		pass
+class feature_SVC(classifier):
+    def __init__(self, features = ['0__fft_coefficient__attr_"real"__coeff_1', '0__fft_coefficient__attr_"angle"__coeff_1', '0__fft_coefficient__attr_"imag"__coeff_1', '0__quantile__q_0.6', '0__median', '0__quantile__q_0.7', '0__fft_coefficient__attr_"real"__coeff_0', '0__sum_values', '0__mean', '0__quantile__q_0.4']):
+        super().__init__()
+        self.model = SVC()
+        self.features = features
 
-class waveform_random_forest(classifier):
-	def __init__(self):
-		super().__init__()
-		self.model = None
+    def preprocess(self, x):
+        x_df = pd.DataFrame(x[0].T)
+        x_df["time"] = [i for i in range(x.shape[1])]
+        x_df["id"] = 0
 
-	def preprocess(self, data):
-		pass
+        for i in range(1, x.shape[0]):
+            to_add = pd.DataFrame(x[i])
+            to_add["id"] = i
+            to_add["time"] = [x for x in range(x.shape[1])]
+            x_df = pd.concat([x_df, to_add])
 
-	def predict(self, X):
-		pass
+        out = extract_features(x_df, column_id= "id", column_sort = "time")
+        return out[self.features]
 
-	def train_model(train_X, train_y):
-		pass
+    def predict(self, X):
+        return self.model.predict(self.preprocess(X))
+
+    def train_model(self, train_X, train_y):
+        self.model.fit(self.preprocess(train_X), train_y)
+
+class feature_RF(feature_SVC):
+	def __init__(self, features = ['0__fft_coefficient__attr_"real"__coeff_1', '0__fft_coefficient__attr_"angle"__coeff_1', '0__fft_coefficient__attr_"imag"__coeff_1', '0__quantile__q_0.6', '0__median', '0__quantile__q_0.7', '0__fft_coefficient__attr_"real"__coeff_0', '0__sum_values', '0__mean', '0__quantile__q_0.4']):
+		self.sampling_rate = sampling_rate
+		self.offset = offset
+	    self.model = RandomForestClassifier()
+        self.features = features
+
 
 class ensemble_classifier(classifier):
 	def __init__(self, classifier_list):
