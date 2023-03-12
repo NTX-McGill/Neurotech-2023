@@ -11,13 +11,13 @@ class classifier:
 		self.sampling_rate = sampling_rate
 		self.offset = offset
 
-	def preprocess(self, data, lower = 0.5, upper = 60):
+	def preprocess(self, data, lower = 0.5, upper = 40):
 		# apply some filters/interpolation/resampling/smoothing/transform
 
+		data -= np.expand_dims(np.mean(data, axis = -1), -1)
 		nyquist = self.sampling_rate / 2
 		b,a = iirnotch(60, 30, self.sampling_rate)
 		data = filtfilt(b, a, data)
-
 		b, a = butter(4, [lower / nyquist, upper / nyquist], 'bandpass', analog=False)
 		data = filtfilt(b, a, data)
 		return data
@@ -99,16 +99,23 @@ class ensemble_classifier(classifier):
 
 if __name__ == '__main__':
 	clf = stupid_clf()
-	raw = np.random.randn(20, 256)
+	# raw = np.random.randn(5, 6, 256)
+	raw = np.load('multichannel_dataset/X_test.npy')
+	plt.plot(raw[0, 0])
+
+	# plt.show()
 	out = clf.preprocess(raw)
-
-	print(clf.predict(raw))
-	test_y = np.random.randint(low = 0, high = 2, size = 20)
-	clf.test(raw, test_y)
-
-	plt.plot(out[0])
-	plt.plot(raw[0])
+	plt.plot(out[0,0])
+	# print(out)
 	plt.show()
+
+	# print(clf.predict(raw))
+	# test_y = np.random.randint(low = 0, high = 2, size = 20)
+	# clf.test(raw, test_y)
+
+	# plt.plot(out[0])
+	# plt.plot(raw[0])
+	# plt.show()
 
 	# clf2 = stupid_clf()
 	# clf3 = stupid_clf()
