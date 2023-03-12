@@ -12,8 +12,6 @@ from matplotlib.animation import FuncAnimation
 from random import random
 
 
-
-
 BoardShim.enable_dev_board_logger()
     
 params = BrainFlowInputParams()
