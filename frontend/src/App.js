@@ -6,7 +6,7 @@ function App(){
     const [appState, setStart] = useState(false);
 
     const handleClick = () => {
-        setStart(true);
+        setStart(!appState);
     };
 
     // fetch(text)
