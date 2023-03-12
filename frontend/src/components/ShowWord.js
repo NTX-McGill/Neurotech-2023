@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 function ShowWord({file, delay}){
     // Initialize wordArray to store words that will flash on screen
-    var wordArray = []
+    var wordArray = [];
 
     // Read from the file and populate the wordArray
     fetch(file)
@@ -42,10 +42,14 @@ function ShowWord({file, delay}){
 		fontSize: "150px",
 		textAlign: "center"
 	};
-
+	
+	var today = new Date();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + today.getMilliseconds();
+	
 	return (
-		<div style={wordStyle}>
-			<h1>{currWord}</h1>
+		<div>
+			<h1 style={wordStyle}>{currWord}</h1>
+			<p>{time}</p>
 		</div>
 	);
 }
