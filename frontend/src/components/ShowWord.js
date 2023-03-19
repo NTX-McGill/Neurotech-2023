@@ -43,8 +43,11 @@ function ShowWord({file, delay}){
 		textAlign: "center"
 	};
 	
-	var today = new Date();
-	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + today.getMilliseconds();
+	//var today = new Date();
+	var time = Date.now();
+	var pf = require("performance-now");
+	time = (time + pf())*1000;		// gives time in microseconds to match with brainflow
+	//var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + today.getMilliseconds();
 	
 	return (
 		<div>
