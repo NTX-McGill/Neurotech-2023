@@ -1,11 +1,15 @@
 import { useState } from "react";
 import ShowWord from "./components/ShowWord";
 import text from "./data/single_words_easy.txt"
+import connect from "./components/connect";
 
 function App(){
     const [appState, setStart] = useState(false);
 
+
     const handleClick = () => {
+      
+        connect.connectToBackend();
         setStart(!appState);
     };
 

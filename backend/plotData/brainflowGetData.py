@@ -66,8 +66,9 @@ class Graph:
             self.curves[count].setData(data[channel].tolist())
 
         self.app.processEvents()
+        
 
-def main(boardType):
+def start(boardType):
     BoardShim.enable_dev_board_logger()
     logging.basicConfig(level=logging.DEBUG)
 
@@ -135,6 +136,10 @@ def main(boardType):
             logging.info('Releasing session')
             board_shim.release_session()
 
+    
+
+def main(boardType):
+    start("Synthetic")
 
 if __name__ == '__main__':
     main("Synthetic") # Or "Cyton"
