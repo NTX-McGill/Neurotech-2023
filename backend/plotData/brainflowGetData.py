@@ -8,15 +8,16 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter, FilterTypes, DetrendOperations
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
-
+from datetime import datetime
+from datetime import date
 
 
 class Graph:
-    def __init__(self, board_shim):
+    def __init__(self, board_shim, start_time):
+        self.name = start_time
         self.board_id = board_shim.get_board_id()
         self.board_shim = board_shim
-        # self.exg_channels = BoardShim.get_exg_channels(self.board_id)
-        self.exg_channels = BoardShim.get_eeg_channels(self.board_id)
+        self.eeg_channels = BoardShim.get_eeg_channels(self.board_id)
         self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
         self.update_speed_ms = 50
         self.window_size = 4
@@ -35,7 +36,7 @@ class Graph:
     def _init_timeseries(self):
         self.plots = list()
         self.curves = list()
-        for i in range(len(self.exg_channels)):
+        for i in range(len(self.eeg_channels)):
             p = self.win.addPlot(row=i, col=0)
             p.showAxis('left', False)
             p.setMenuEnabled('left', False)
@@ -50,20 +51,10 @@ class Graph:
     def update(self):
         data = self.board_shim.get_current_board_data(self.num_points)
 
-        print(BoardShim.get_board_descr(self.board_id))
-        # print(len(data))
-        # print(data)
-
         # Save raw data
-        
-        # filePath = "test1.txt"
-        # with open(filePath, 'w') as f:
-        #     f.write(str(data))
+        DataFilter.write_file(data, "RawEEG_"+self.name+".txt", 'w')  # use 'a' for append mode
 
-        DataFilter.write_file(data, 'test3.txt', 'w')  # use 'a' for append mode
-        
-
-        for count, channel in enumerate(self.exg_channels):
+        for count, channel in enumerate(self.eeg_channels):
             # plot timeseries
             DataFilter.detrend(data[channel], DetrendOperations.CONSTANT.value)
             DataFilter.perform_bandpass(data[channel], self.sampling_rate, 3.0, 45.0, 2,
@@ -76,30 +67,40 @@ class Graph:
 
         self.app.processEvents()
 
-
-def main():
+def main(boardType):
     BoardShim.enable_dev_board_logger()
     logging.basicConfig(level=logging.DEBUG)
 
     parser = argparse.ArgumentParser()
     # use docs to check which parameters are required for specific board, e.g. for Cyton - set serial port
+
     parser.add_argument('--timeout', type=int, help='timeout for device discovery or connection', required=False,
-                        default=0)
+                            default=0)
     parser.add_argument('--ip-port', type=int, help='ip port', required=False, default=0)
     parser.add_argument('--ip-protocol', type=int, help='ip protocol, check IpProtocolType enum', required=False,
                         default=0)
     parser.add_argument('--ip-address', type=str, help='ip address', required=False, default='')
-    # parser.add_argument('--serial-port', type=str, help='serial port', required=False, default='')
-    parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="COM9")
     parser.add_argument('--mac-address', type=str, help='mac address', required=False, default='')
     parser.add_argument('--other-info', type=str, help='other info', required=False, default='')
     parser.add_argument('--streamer-params', type=str, help='streamer params', required=False, default='')
     parser.add_argument('--serial-number', type=str, help='serial number', required=False, default='')
-    # parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
-    #                     required=False, default=BoardIds.SYNTHETIC_BOARD)
-    parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
-                        required=False, default=BoardIds.CYTON_DAISY_BOARD)
     parser.add_argument('--file', type=str, help='file', required=False, default='')
+
+    if(boardType == "Synthetic"):
+        print("Synthetic board starts")
+        
+        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default='')
+        parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
+                            required=False, default=BoardIds.SYNTHETIC_BOARD)
+    elif(boardType == "Cyton"):
+        print("Cyton board starts")
+        
+        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="COM9")
+        parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
+                            required=False, default=BoardIds.CYTON_DAISY_BOARD)
+    else:
+        print("Please choose between Synthetic and Cyton boards")
+
     args = parser.parse_args()
 
     params = BrainFlowInputParams()
@@ -113,13 +114,19 @@ def main():
     params.timeout = args.timeout
     params.file = args.file
 
+    # Create file name based on current time
+    today = date.today()
+    now = datetime.now()
+    current_time = today.strftime("%Y%m%d_") + now.strftime("%H%M%S")
+    # print(current_time)
+    
     try:
         board_shim = BoardShim(args.board_id, params)
         
         board_shim.prepare_session()
         board_shim.start_stream(450000, args.streamer_params)
         # print(board_shim.get_current_board_data(256))
-        Graph(board_shim)
+        Graph(board_shim, current_time)
     except BaseException:
         logging.warning('Exception', exc_info=True)
     finally:
@@ -130,4 +137,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main("Synthetic") # Or "Cyton"
