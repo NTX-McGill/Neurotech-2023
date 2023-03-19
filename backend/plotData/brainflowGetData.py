@@ -139,7 +139,7 @@ def start(boardType):
     
 
 def main(boardType):
-    start("Synthetic")
+    start(boardType)
 
 if __name__ == '__main__':
-    main("Synthetic") # Or "Cyton"
+    main("Cyton") # Or "Synthetic"

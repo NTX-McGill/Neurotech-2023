@@ -5,6 +5,7 @@ from threading import Lock
 from datetime import datetime
 import time
 from datastream import startStream
+from plotData.brainflowGetData import start
 
 
 thread = None
