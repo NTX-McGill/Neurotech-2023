@@ -3,6 +3,7 @@ from flask_socketio import SocketIO
 from random import random
 from threading import Lock
 from datetime import datetime
+import time
 from datastream import startStream
 
 
@@ -19,7 +20,9 @@ app.host = 'localhost'
 
 def get_current_datetime():
     now = datetime.now()
-    return now.strftime("%m/%d/%Y %H:%M:%S")
+    # Return UNIX timestamp
+    return time.mktime(now.timetuple())
+    # return now.strftime("%m/%d/%Y %H:%M:%S")
 
 
 
