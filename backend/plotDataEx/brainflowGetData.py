@@ -7,13 +7,16 @@ import pyqtgraph as pg
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter, FilterTypes, DetrendOperations
 from pyqtgraph.Qt import QtGui, QtCore
+import numpy as np
+
 
 
 class Graph:
     def __init__(self, board_shim):
         self.board_id = board_shim.get_board_id()
         self.board_shim = board_shim
-        self.exg_channels = BoardShim.get_exg_channels(self.board_id)
+        # self.exg_channels = BoardShim.get_exg_channels(self.board_id)
+        self.exg_channels = BoardShim.get_eeg_channels(self.board_id)
         self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
         self.update_speed_ms = 50
         self.window_size = 4
@@ -46,6 +49,20 @@ class Graph:
 
     def update(self):
         data = self.board_shim.get_current_board_data(self.num_points)
+
+        print(BoardShim.get_board_descr(self.board_id))
+        # print(len(data))
+        # print(data)
+
+        # Save raw data
+        
+        # filePath = "test1.txt"
+        # with open(filePath, 'w') as f:
+        #     f.write(str(data))
+
+        DataFilter.write_file(data, 'test3.txt', 'w')  # use 'a' for append mode
+        
+
         for count, channel in enumerate(self.exg_channels):
             # plot timeseries
             DataFilter.detrend(data[channel], DetrendOperations.CONSTANT.value)
@@ -98,8 +115,10 @@ def main():
 
     try:
         board_shim = BoardShim(args.board_id, params)
+        
         board_shim.prepare_session()
         board_shim.start_stream(450000, args.streamer_params)
+        # print(board_shim.get_current_board_data(256))
         Graph(board_shim)
     except BaseException:
         logging.warning('Exception', exc_info=True)
