@@ -87,6 +87,41 @@ class feature_RF(feature_SVC):
 		self.model = RandomForestClassifier()
 		self.features = features
 
+class peak_SVC(classifier):
+    def __init__(self):
+        super().__init__()
+        self.model = SVC()
+        
+    def preprocess(self, x):
+        peak_dataset = []
+
+        for i in range(len(x)):
+            sample = -super().preprocess(x[i], upper = 10)
+            peaks, _ = find_peaks(sample)
+            peaks = peaks[peaks < self.sampling_rate*(self.offset + 0.5)]
+            peaks = peaks[peaks > self.sampling_rate*(self.offset + 0.3)]
+
+            if len(peaks) == 0:
+                peaks = [0.6*256, -20]
+            else:
+                max_p = peaks[0]
+                for p in peaks[1:]:
+                    if sample[p] > max_p:
+                        max_p = p
+
+                peaks = [max_p, sample[max_p]]
+
+
+            peak_dataset.append(peaks)
+            
+        return peak_dataset
+
+    def predict(self, X):
+        return self.model.predict(self.preprocess(X))
+
+    def train_model(self, train_X, train_y):
+        self.model.fit(self.preprocess(train_X), train_y)
+
 
 class ensemble_classifier(classifier):
 	def __init__(self, classifier_list):
