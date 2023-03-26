@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {CSVLink} from "react-csv";
+
+var timestamps = [];
 
 function ShowWord({file, delay}){
     // Initialize wordArray to store words that will flash on screen
@@ -48,11 +51,15 @@ function ShowWord({file, delay}){
 	var pf = require("performance-now");
 	time = (time + pf())*1000;		// gives time in microseconds to match with brainflow
 	//var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + today.getMilliseconds();
-	
+
+	const timestamp = [currWord, time];
+	timestamps.push(timestamp);
+
 	return (
 		<div>
 			<h1 style={wordStyle}>{currWord}</h1>
 			<p>{time}</p>
+			<CSVLink data={timestamps} headers={["word", "time"]}>Get timestamps</CSVLink>
 		</div>
 	);
 }
