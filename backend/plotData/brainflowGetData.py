@@ -52,7 +52,7 @@ class Graph:
         data = self.board_shim.get_current_board_data(self.num_points)
 
         # Save raw data
-        DataFilter.write_file(data, "RawEEG_"+self.name+".txt", 'w')  # use 'a' for append mode
+        DataFilter.write_file(data, "RawEEG_"+self.name+".txt", 'a')  # use 'a' for append mode
 
         for count, channel in enumerate(self.eeg_channels):
             # plot timeseries
@@ -142,4 +142,4 @@ def main(boardType):
     start(boardType)
 
 if __name__ == '__main__':
-    main("Cyton") # Or "Synthetic"
+    main("Synthetic") # Or "Synthetic"
