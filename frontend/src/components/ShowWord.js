@@ -46,11 +46,11 @@ function ShowWord({file, delay}){
 		textAlign: "center"
 	};
 	
-	//var today = new Date();
+	var today = new Date();
 	var time = Date.now();
 	var pf = require("performance-now");
 	time = (time + pf())*1000;		// gives time in microseconds to match with brainflow
-	//var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + today.getMilliseconds();
+	var outputtime = today.getFullYear()  + '_' + today.getMonth() +  "_" + today.getDate() + '_' + today.getHours() + '_'+ today.getMinutes();
 
 	const timestamp = [currWord, time];
 	timestamps.push(timestamp);
@@ -59,7 +59,7 @@ function ShowWord({file, delay}){
 		<div>
 			<h1 style={wordStyle}>{currWord}</h1>
 			<p>{time}</p>
-			<CSVLink data={timestamps} headers={["word", "time"]}>Get timestamps</CSVLink>
+			<CSVLink filename= {outputtime.toString()+'_timestamps'}  data={timestamps} headers={["word", "time"]}>Get timestamps</CSVLink>
 		</div>
 	);
 }

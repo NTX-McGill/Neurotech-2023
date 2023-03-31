@@ -11,7 +11,6 @@ import numpy as np
 from datetime import datetime
 from datetime import date
 
-
 class Graph:
     def __init__(self, board_shim, start_time):
         self.name = start_time
@@ -19,9 +18,9 @@ class Graph:
         self.board_shim = board_shim
         self.eeg_channels = BoardShim.get_eeg_channels(self.board_id)
         self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
-        self.update_speed_ms = 50
-        self.window_size = 4
-        self.num_points = self.window_size * self.sampling_rate
+        self.update_speed_ms = 100
+        self.window_size = 0.1 # need to make this 50 ms
+        self.num_points = int(self.window_size * self.sampling_rate)
 
         self.app = QtGui.QApplication([])
         self.win = pg.GraphicsWindow(title='BrainFlow Plot', size=(800, 600))
@@ -96,7 +95,7 @@ def start(boardType):
     elif(boardType == "Cyton"):
         print("Cyton board starts")
         
-        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="COM9")
+        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="COM6")
         parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
                             required=False, default=BoardIds.CYTON_DAISY_BOARD)
     else:
@@ -135,11 +134,10 @@ def start(boardType):
         if board_shim.is_prepared():
             logging.info('Releasing session')
             board_shim.release_session()
-
-    
+ 
 
 def main(boardType):
     start(boardType)
 
 if __name__ == '__main__':
-    main("Synthetic") # Or "Synthetic"
+    main("Cyton") # Or "Synthetic"
