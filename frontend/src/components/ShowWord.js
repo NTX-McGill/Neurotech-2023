@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {CSVLink} from "react-csv";
+import connect from "./connect";
 
 var timestamps = [];
 
@@ -13,6 +14,12 @@ function ShowWord({file, delay}){
     .then(text => {
         wordArray = text.split("\n");
     });
+	const handleClick = () => {
+      
+        connect.connectToBackend(timestamps);
+		setIsActive(false)
+       
+    };
 
 
     // Set the state to allow for flashing words
@@ -59,6 +66,7 @@ function ShowWord({file, delay}){
 		<div>
 			<h1 style={wordStyle}>{currWord}</h1>
 			<p>{time}</p>
+			<button onClick={handleClick}>Send</button>
 			<CSVLink filename= {outputtime.toString()+'_timestamps'}  data={timestamps} headers={["word", "time"]}>Get timestamps</CSVLink>
 		</div>
 	);
