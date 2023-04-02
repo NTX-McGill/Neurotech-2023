@@ -142,8 +142,8 @@ def start(boardType):
             board_shim.release_session()
  
 
-def main(boardType):
-    start(boardType)
+# def main(boardType):
+#     start(boardType)
 
-if __name__ == '__main__':
-    main("Synthetic") # Or "Synthetic"
+# if __name__ == '__main__':
+#     main("Synthetic") # Or "Synthetic"
