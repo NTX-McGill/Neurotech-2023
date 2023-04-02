@@ -11,6 +11,9 @@ import numpy as np
 from datetime import datetime
 from datetime import date
 import time
+# from predict import predict
+# from parse_offline_data import parse
+data_collection = True
 
 class Graph:
     def __init__(self, board_shim, start_time):
@@ -96,7 +99,7 @@ def start(boardType):
     elif(boardType == "Cyton"):
         print("Cyton board starts")
         
-        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="COM6")
+        parser.add_argument('--serial-port', type=str, help='serial port', required=False, default="ttyUSB0")
         parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
                             required=False, default=BoardIds.CYTON_DAISY_BOARD)
     else:
@@ -120,6 +123,7 @@ def start(boardType):
     now = datetime.now()
     current_time = today.strftime("%Y%m%d_") + now.strftime("%H%M%S")
     # print(current_time)
+    n400_list = []
     
     try:
         board_shim = BoardShim(args.board_id, params)
@@ -128,11 +132,31 @@ def start(boardType):
         board_shim.start_stream(450000, args.streamer_params)
         # print(board_shim.get_current_board_data(256))
 
-        time.sleep(10) # set how long we're recording for
+        if data_collection:
+            time.sleep(10) # set how long we're recording for
+        else:
+            # wait for post
+            pass
+
+
+
         data = board_shim.get_board_data()
         DataFilter.write_file(data, "RawEEG_"+current_time+".txt", 'a')  # use 'a' for append mode
 
-        # Graph(board_shim, current_time)
+        if not data_collection:
+            X, _, words = parse("RawEEG_"+current_time+".txt") ####
+            preds = predict(X)
+
+            for i in range(len(preds)):
+                if preds[i] == 1:
+                    n400_list.append(words[i])
+
+
+            summary = api_call(n400_list)
+
+            # send summary to frontend to display
+
+
     except BaseException:
         logging.warning('Exception', exc_info=True)
     finally:
@@ -146,4 +170,4 @@ def main(boardType):
     start(boardType)
 
 if __name__ == '__main__':
-    main("Synthetic") # Or "Synthetic"
+    main("Cyton") # Or "Synthetic"
