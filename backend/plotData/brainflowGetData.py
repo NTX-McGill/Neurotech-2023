@@ -10,6 +10,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
 from datetime import datetime
 from datetime import date
+import time
 
 class Graph:
     def __init__(self, board_shim, start_time):
@@ -19,7 +20,7 @@ class Graph:
         self.eeg_channels = BoardShim.get_eeg_channels(self.board_id)
         self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
         self.update_speed_ms = 100
-        self.window_size = 0.1 # need to make this 50 ms
+        self.window_size = 0.1 # need to make this 100 ms
         self.num_points = int(self.window_size * self.sampling_rate)
 
         self.app = QtGui.QApplication([])
@@ -126,7 +127,12 @@ def start(boardType):
         board_shim.prepare_session()
         board_shim.start_stream(450000, args.streamer_params)
         # print(board_shim.get_current_board_data(256))
-        Graph(board_shim, current_time)
+
+        time.sleep(10) # set how long we're recording for
+        data = board_shim.get_board_data()
+        DataFilter.write_file(data, "RawEEG_"+current_time+".txt", 'a')  # use 'a' for append mode
+
+        # Graph(board_shim, current_time)
     except BaseException:
         logging.warning('Exception', exc_info=True)
     finally:
@@ -140,4 +146,4 @@ def main(boardType):
     start(boardType)
 
 if __name__ == '__main__':
-    main("Cyton") # Or "Synthetic"
+    main("Synthetic") # Or "Synthetic"
