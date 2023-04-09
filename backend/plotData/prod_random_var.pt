@@ -1,0 +1,12 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+rs = np.random.RandomState(37)
+
+X = rs.rand(10000)
+Y = rs.rand(10000)
+Z = X*Y
+
+hist = np.hstack(Z)
+plt.hist(hist, bins = 'auto')
+plt.show()
