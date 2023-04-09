@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import bisect 
 from scipy.interpolate import interp1d
 import re
+import os
 
 def parse(data_filename, wordlist_filename, timestamp_filename):
 
@@ -38,9 +39,6 @@ def parse(data_filename, wordlist_filename, timestamp_filename):
 	X = []
 	y = []
 	data_times = data['time'].to_numpy()
-	print(data_times[0])
-	print(data_times[-1])
-	print(1/(data_times[1] - data_times[0]))
 
 	channel_list = ['Cz', 'C3', 'C4', 'Fz', 'P3', 'P4'] # in order
 
@@ -57,9 +55,9 @@ def parse(data_filename, wordlist_filename, timestamp_filename):
 					interpolated_data = interp(np.linspace(start = 0, stop = 1, num = 256))
 					to_append.append(interpolated_data)
 
-			X.append(to_append)
-			print(row['word'], check_word(row['word']))
-			y.append(check_word(row['word']))
+				X.append(to_append)
+				# print(row['word'], check_word(row['word']))
+				y.append(check_word(row['word']))
 
 	return np.array(X), np.array(y)
 
@@ -68,23 +66,42 @@ def save_parse(data_filename, wordlist_filename, timestamp_filename):
 	np.save('X_' + str(data_filename).split(".")[0], np.array(X)) 
 	np.save('y_' + str(data_filename).split(".")[0], np.array(y))
 
-def save_parse_files(data_filenames, wordlist_filenames, timestamp_filename, output_filename):
-	X = []
-	y = []
-	for i in range(data_filenames):
+def save_parse_files(data_filenames, wordlist_filename, timestamp_filenames, output_filename):
+	Xs = []
+	ys = []
+	for i in range(len(data_filenames)):
 		X_a, y_a = parse(data_filenames[i], wordlist_filename, timestamp_filenames[i])
-		X.append(X_a)
-		y.append(y_a)
+		print(X_a.shape)
+		Xs.append(X_a)
+		ys.append(y_a)
+
+	X = Xs[0]
+	y = ys[0]
+
+	for i in range(1, len(Xs)):
+		X = np.concatenate((X, Xs[i]), axis = 0)
+		y = np.concatenate((y, ys[i]), axis = 0)
 
 	print(np.array(X).shape)
+	np.save('X_' + output_filename, np.array(X)) 
+	np.save('y_' + output_filename, np.array(y))
 
+def save_all_offline_data():
+	data_filenames = sorted(['offline_data/' + x for x in os.listdir('offline_data')])
+	timestamp_filenames = sorted(['offline_timestamps/' + x for x in os.listdir('offline_timestamps')])
 
+	print(data_filenames, timestamp_filenames)
+	wordlist_filename = "Fin_List_sent.csv"
+	output_filename = "offline"
+
+	save_parse_files(data_filenames, wordlist_filename, timestamp_filenames, output_filename)
 
 if __name__ == '__main__':
-	wordlist_filename = "Fin_List_sent.csv"
+	# wordlist_filename = "Fin_List_sent.csv"
 	# timestamp_filename = "test_timestamps.csv"
 	# data_filename = "test_data.txt"
 	# save_parse(data_filename, wordlist_filename, timestamp_filename)
 
-	timestamp_filename = "test_timestamps.csv"
-	data_filename = "test_data.txt"
+	# timestamp_filename = "test_timestamps.csv"
+	# data_filename = "test_data.txt"
+	save_all_offline_data()
