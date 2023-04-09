@@ -13,6 +13,7 @@ from datetime import date
 import time
 # from predict import predict
 # from parse_offline_data import parse
+# from call_api import call_api
 data_collection = True
 
 class Graph:
@@ -152,7 +153,7 @@ def start(boardType):
                     n400_list.append(words[i])
 
 
-            summary = api_call(n400_list)
+            summary = call_api(n400_list)
 
             # send summary to frontend to display
 
