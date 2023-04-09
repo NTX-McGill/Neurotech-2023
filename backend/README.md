@@ -1,17 +1,7 @@
-# neurotech-hackathon
+# Backend
 
-# backend
-
-
-## To only display the real time graph
-`python datastream.py`
-
-- Uncomment line 21 in datastream.py and change the serial port
-- Change `board_id` (line 23) in datastream.py to the appropriate board id
-- There is only one plot showing signal from only one electrode. If using more then uncomment the appropriate lines
-
-## To run the frontend and backend together
-`python server.py` 
-- run frontend
-
-
+- Create a virtual environment on your machine using the file [Requirements](/backend/requirements.txt) and activate it.
+- Set the time in milliseconds in line 147 of [Get Data](/backend/plotData/brainflowGetData.py) which will tell the backend how long you want to record for. 
+- Navigate to the frontend folder and run the command `npm start` to start the frontend.
+- Run the python file from the terminal by `$ python brainflowGetData.py`.
+- Go to the frontend and hit the start button to display words. The recording will automatically.
