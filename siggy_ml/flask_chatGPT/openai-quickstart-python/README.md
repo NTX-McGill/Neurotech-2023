@@ -1,6 +1,6 @@
 Run the app:
 
-cd into openai-quickstart-python
+cd openai-quickstart-python
 
 flask run
 
