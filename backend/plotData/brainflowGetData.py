@@ -144,7 +144,7 @@ def start(boardType):
         # print(board_shim.get_current_board_data(256))
 
         if data_collection:
-            time.sleep(150)  # set how long we're recording for
+            time.sleep(10)  # set how long we're recording for
         else:
             # wait for post
             pass
