@@ -68,11 +68,11 @@ def save_parse(data_filename, wordlist_filename, timestamp_filename):
 	np.save('X_' + str(data_filename).split(".")[0], np.array(X)) 
 	np.save('y_' + str(data_filename).split(".")[0], np.array(y))
 
-def save_parse_files(data_filenames, wordlist_filenames, timestamp_filenames, output_filename):
+def save_parse_files(data_filenames, wordlist_filenames, timestamp_filename, output_filename):
 	X = []
 	y = []
 	for i in range(data_filenames):
-		X_a, y_a = parse(data_filenames[i], wordlist_filenames[i], timestamp_filenames[i])
+		X_a, y_a = parse(data_filenames[i], wordlist_filename, timestamp_filenames[i])
 		X.append(X_a)
 		y.append(y_a)
 
@@ -82,6 +82,9 @@ def save_parse_files(data_filenames, wordlist_filenames, timestamp_filenames, ou
 
 if __name__ == '__main__':
 	wordlist_filename = "Fin_List_sent.csv"
+	# timestamp_filename = "test_timestamps.csv"
+	# data_filename = "test_data.txt"
+	# save_parse(data_filename, wordlist_filename, timestamp_filename)
+
 	timestamp_filename = "test_timestamps.csv"
 	data_filename = "test_data.txt"
-	save_parse(data_filename, wordlist_filename, timestamp_filename)
