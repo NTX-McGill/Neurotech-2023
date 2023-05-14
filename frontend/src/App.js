@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ShowWord from "./components/ShowWord";
 // import text from "./data/single_words_easy.txt"
-import text from "./data/pseudo_session7.txt"
+import text from "./data/may/400/inco_session0.txt"
 
 
 function App(){
