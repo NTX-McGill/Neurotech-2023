@@ -28,6 +28,11 @@ function ShowWord({file, delay}){
 
 	const index = useRef(0);
 
+	if (currWord === "+") {
+		delay = 600;
+	}
+
+
     // Flashing word effect
 	useEffect(() => {
 		let interval = null;

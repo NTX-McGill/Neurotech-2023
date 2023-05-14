@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ShowWord from "./components/ShowWord";
 // import text from "./data/single_words_easy.txt"
-import text from "./data/wordsbwords.txt"
+import text from "./data/pseudo_session7.txt"
 
 
 function App(){
@@ -25,7 +25,7 @@ function App(){
             <button onClick={handleClick}>Start</button>
             {
                 // appState && <ShowWord word="Hello"/> 
-                appState && <ShowWord file={text} delay={1000}/> 
+                appState && <ShowWord file={text} delay={200}/> 
             }
                        
         </div>
